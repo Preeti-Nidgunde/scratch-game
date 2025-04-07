@@ -9,12 +9,16 @@ Execute the below command to run the application:
 ```
 
 
-To execute the test cases, use the below command:
+To execute the test cases, use the following command:
 ```
 ./gradlew test
 ```
 
-Screenshots:
+Application output Screenshots:
 
 ![image](https://github.com/user-attachments/assets/249bc18b-83c6-4068-b7e8-aeb98a4158d2)
 
+
+
+Report of test cases: 
+https://github.com/Preeti-Nidgunde/scratch-game/blob/main/testcases.html
