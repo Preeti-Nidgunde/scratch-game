@@ -1,17 +1,23 @@
-# Home Assignment: Scratch Game #
 
 
-## Requirements ##
 
-- JDK >= 1.8
-- Maven or Gradle
-- feel free to choose any libraries for serialize/deserialize JSON and testing
-- not recommended to add any additional libraries/frameworks, like spring or other high level frameworks
+To run this application, download the JAR from the release section 
+Execute the below command to run the application:
 
-## Description ##
+```bash
+ java -jar <your-jar-file> --config <config.json> --betting-amount <100>
+```
 
-Problem statement: You need to build a scratch game, that will generate a matrix (for example 3x3) from symbols(based on probabilities for each individual cell) and based on winning combintations user either will win or lost.
-User will place a bet with any amount which we call *betting amount* in this assignment.
+
+To execute the test cases, use the below command:
+```
+./gradlew test
+```
+
+
+
+Designed a scratch game that will generate a matrix (for example 3x3) from symbols(based on probabilities for each cell), and based on winning combinations user either will win or lose.
+The user will place a bet with any amount, which we call *betting amount* in this assignment.
 
 
 There are two types of symbols: Standard Symbols, Bonus Symbols.
@@ -221,34 +227,6 @@ Let's look at the configuration file below:
 }
 ```
 
-| field name                                           | description                                                                                                                                                                                                               |
-|------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| columns                                              | number of columns in the matrix                                                                                                                                                                                           |
-| rows                                                 | number of rows in the matrix                                                                                                                                                                                              |
-| symbols                                              | list of symbols                                                                                                                                                                                                           |
-| symbol.{X}.reward_multiplier                         | will multiply betting amount                                                                                                                                                                                              |
-| symbol.{X}.type                                      | can be either standard or bonus                                                                                                                                                                                           |
-| symbol.{X}.extra                                     | [only for bonuses] extra amount which will be added to the reward                                                                                                                                                         |
-| symbol.{X}.impact                                    | [only for bonuses] fixed values: multiply_reward (which multiply final reward to *symbol.{X}.reward_multiplier*), extra_bonus(will add *symbol.{X}.extra* to the final reward), miss(nothing)                             |
-| probabilities                                        | list of probabilities                                                                                                                                                                                                     |
-| probabilities.standard_symbols                       | list of probabilities for standard symbols                                                                                                                                                                                |
-| probabilities.standard_symbols[...].column           | column index                                                                                                                                                                                                              |
-| probabilities.standard_symbols[...].row              | row index                                                                                                                                                                                                                 |
-| probabilities.standard_symbols[...].symbols          | map of a symbol and it's probability number(to calculate to probability percentage just sum all symbols probability numbers and divide individual symbol's probability number to total probability numbers)               |
-| probabilities.bonus_symbols                          | list of probabilities for bonus symbols                                                                                                                                                                                   |
-| probabilities.bonus_symbols.symbols                  | map of a symbol and it's probability number(to calculate to probability percentage just sum all symbols probability numbers and divide individual symbol's probability number to total probability numbers)               |
-| probabilities.win_combinations                       | list of winning combinations                                                                                                                                                                                              |
-| probabilities.win_combinations.{X}.reward_multiplier | will multiply reward                                                                                                                                                                                                      |
-| probabilities.win_combinations.{X}.count             | required count of the same symbols to activate the reward                                                                                                                                                                 |
-| probabilities.win_combinations.{X}.group             | group which the winning combination belongs to, max 1 winning combination should be applied for each win combination group                                                                                                |
-| probabilities.win_combinations.{X}.covered_areas     | array of array of strings which is described as "%d:%d" which demonstrates row and column number respectively                                                                                                             |
-| probabilities.win_combinations.{X}.when              | fixed values: same_symbols (if one symbol repeated in the matrix *probabilities.win_combinations.{X}.count* times), linear_symbols(if it matches to *probabilities.win_combinations.{X}.covered_areas*)                   |
-
-- Note: Fields which are marked as OPTIONAL, are not required but will add extra points to the candidate if the candidate implements it.
-- Note (2): Bonus symbol can be generated randomly in any cell(s) in the matrix
-- Note (3): If one symbols matches more than winning combinations then reward should be multiplied. formula: (SYMBOL_1 * WIN_COMBINATION_1_FOR_SYMBOL_1 * WIN_COMBINATION_2_FOR_SYMBOL_1)
-- Note (4): If the more than one symbols matches any winning combinations then reward should be summed. formula: (SYMBOL_1 * WIN_COMBINATION_1_FOR_SYMBOL_1 * WIN_COMBINATION_2_FOR_SYMBOL_1) + (SYMBOL_2 * WIN_COMBINATION_1_FOR_SYMBOL_2)
-
 Input format:
 
 ```
@@ -276,57 +254,3 @@ Output format:
     "applied_bonus_symbol": "+1000"
 }
 ```
-
-| field name                   | description                                            |
-|------------------------------|--------------------------------------------------------|
-| matrix                       | generated 2D matrix                                    |
-| reward                       | final reward which user won                            |
-| applied_winning_combinations | Map of Symbol and List of applied winning combinations  |
-| applied_bonus_symbol         | applied bonus symbol (can be null if the bonus is MISS |
-
-Rewards breakdown:
-
-| reward name             | reward details                    |
-|-------------------------|-----------------------------------|
-| symbol_A                | bet_amount x5                     |
-| symbol_B                | bet_amount x3                     |
-| same_symbol_5_times     | (reward for a specific symbol) x5 |
-| same_symbol_3_times     | (reward for a specific symbol) x1 |
-| same_symbols_vertically | (reward for a specific symbol) x2 |
-| +1000                   | add 1000 extra to final reward    |
-
-Calculations: (bet_amount x reward(symbol_A) x reward(same_symbol_5_times) x reward(same_symbols_vertically)) + (bet_amount x reward(symbol_B) x reward(same_symbol_3_times) x reward(same_symbols_vertically)) (+/x) reward(+1000) = (100 x5 x5 x2) + (100 x3 x1 x2) +1000 = 5000 + 600 + 1000 = 6600
-
-Examples (with a winning combination [same symbols should be repeated at least 3 / reward x2]):
-
-Lost game:
-
-![Lost Game](lost_game.png "Lost")
-
-| input             | output                                                                                                                      |
-|-------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| "bet_amount": 100 | { </br> "matrix": [ </br> ["A", "B", "C"], </br> ["E", "B", "5x"], </br> ["F", "D", "C"] </br> ], </br> "reward": 0 </br> } |
-
-Description: The game is settled as LOST, so bonus symbol has not been applied because the reward is 0.
-
-Won game:
-
-![Won Game](won_game_3x3.png "Won with 10x")
-
-| input             | output                                                                                                                                                                                                                                                   |
-|-------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| "bet_amount": 100 | { </br> "matrix": [ </br> ["A", "B", "C"], </br> ["E", "B", "10x"], </br> ["F", "D", "B"] </br> ], </br> "reward": 50000, </br> "applied_winning_combinations": {</br> "B": ["same_symbol_5_times"] </br> }, </br> "applied_bonus_symbol": "10x" </br> } |
-
-Description: user placed a bet with 100 betting amount and generated matrix has 3 same symbols which matches with the winning combination, also 10x bonus also will be applied.
-Formula: 100(betting amount) x 25(symbol B) x2(at least 3 same symbols winning combination) x10(x10 bonus symbol) = 50000 (winning amount)
-
-Note: Please make sure there are no errors while building (all test cases should be passed if you provided any) and your solution is testable through CLI like below:
-
-```bash
- java -jar <your-jar-file> --config config.json --betting-amount 100
-```
-
-| parameter      | description                                        |
-|----------------|----------------------------------------------------|
-| config         | config file which is described top of the document |
-| betting amount | betting amount                                     |
